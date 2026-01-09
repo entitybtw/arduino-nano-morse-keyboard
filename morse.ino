@@ -7,6 +7,8 @@ String currentSymbol = "";
 bool isRussian = false;
 bool layoutSignaled = false;
 
+enum Layout { EN, RU, MORSE };
+Layout currentLayout = EN;
 
 struct MorseLetter {
   const char* code;
@@ -33,8 +35,9 @@ MorseLetter morseRU[] = {
 };
 
 MorseLetter morseMORSE[] = {
-  {".", "."},   {"-", "-"}
-}
+  {".", "."},
+  {"-", "-"}
+};
 
 const char* decodeMorse(String s) {
   MorseLetter* table;
@@ -57,7 +60,6 @@ const char* decodeMorse(String s) {
   return "?";
 }
 
-
 void setup() {
   Keyboard.begin();
   pinMode(3, INPUT_PULLUP);
@@ -72,36 +74,42 @@ void loop() {
     if (!lastState) pressStart = now;
     pressStart = now;
     layoutSignaled = false;
-
   } else {
     noNewTone(8);
     if (lastState) {
       unsigned long pressDuration = now - pressStart;
 
-if (!layoutSignaled && now - pressStart >= 600) {
-  if (currentLayout == EN) currentLayout = RU;
-  else if (currentLayout == RU) currentLayout = MORSE;
-  else currentLayout = EN;
+      if (!layoutSignaled && pressDuration >= 600) {
+        if (currentLayout == EN) currentLayout = RU;
+        else if (currentLayout == RU) currentLayout = MORSE;
+        else currentLayout = EN;
 
-  if (currentLayout != MORSE) {
-    // note: надо чтобы предварительно на устройстве стояла en раскладка
-    Keyboard.press(KEY_LEFT_ALT);
-    Keyboard.press(KEY_LEFT_SHIFT);
-    Keyboard.releaseAll();
-  }
+        if (currentLayout != MORSE) {
+        //  note: надо чтобы предварительно на устройстве стояла en раскладка
+          Keyboard.press(KEY_LEFT_ALT);
+          Keyboard.press(KEY_LEFT_SHIFT);
+          Keyboard.releaseAll();
+        }
 
-  noNewTone(8);
-  NewTone(8, currentLayout == MORSE ? 1500 : 1000);
-  delay(80);
-  noNewTone(8);
+        noNewTone(8);
+        NewTone(8, currentLayout == MORSE ? 1500 : 1000);
+        delay(80);
+        noNewTone(8);
 
-  layoutSignaled = true;
-}
-
+        layoutSignaled = true;
+      }
+      else if (pressDuration >= 200) {
+        currentSymbol += "-";
+        lastMillis = now;
+      }
+      else if (pressDuration >= 80) {
+        currentSymbol += ".";
+        lastMillis = now;
+      }
     }
 
     if (currentSymbol.length() && now - lastMillis > 600) {
-      Keyboard.print(decodeMorse(currentSymbol, isRussian));
+      Keyboard.print(decodeMorse(currentSymbol));
       currentSymbol = "";
     }
   }
