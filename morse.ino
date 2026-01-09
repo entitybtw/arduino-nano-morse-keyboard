@@ -4,8 +4,9 @@ unsigned long lastMillis = 0;
 unsigned long pressStart = 0;
 bool lastState = false;
 String currentSymbol = "";
-byte layoutMode = 0;
+bool isRussian = false;
 bool layoutSignaled = false;
+
 
 struct MorseLetter {
   const char* code;
@@ -32,36 +33,30 @@ MorseLetter morseRU[] = {
 };
 
 MorseLetter morseMORSE[] = {
-  {".-", ".-"},   {"-...", "-..."}, {"-.-.", "-.-."}, {"-..", "-.."},  {".", "."},
-  {"..-.", "..-."}, {"--.", "--."},  {"....", "...."}, {"..", ".."},   {".---", ".---"},
-  {"-.-", "-.-"},  {".-..", ".-.."}, {"--", "--"},   {"-.", "-."},   {"---", "---"},
-  {".--.", ".--."}, {"--.-", "--.-"}, {".-.", ".-."},  {"...", "..."},  {"-", "-"},
-  {"..-", "..-"},  {"...-", "...-"}, {".--", ".--"},  {"-..-", "-..-"}, {"-.--", "-.--"},
-  {"--..", "--.."}
-};
+  {".", "."},   {"-", "-"}
+}
 
-const char* decodeMorse(String s, byte mode) {
-  if(mode == 0) {
-    MorseLetter* table = morseEN;
-    int len = sizeof(morseEN) / sizeof(MorseLetter);
-    for (int i = 0; i < len; i++) {
-      if (s == table[i].code) return table[i].letter;
-    }
-  } else if(mode == 1) {
-    MorseLetter* table = morseRU;
-    int len = sizeof(morseRU) / sizeof(MorseLetter);
-    for (int i = 0; i < len; i++) {
-      if (s == table[i].code) return table[i].letter;
-    }
-  } else if(mode == 2) {
-    MorseLetter* table = morseMORSE;
-    int len = sizeof(morseMORSE) / sizeof(MorseLetter);
-    for (int i = 0; i < len; i++) {
-      if (s == table[i].code) return table[i].letter;
-    }
+const char* decodeMorse(String s) {
+  MorseLetter* table;
+  int len;
+
+  if (currentLayout == RU) {
+    table = morseRU;
+    len = sizeof(morseRU) / sizeof(MorseLetter);
+  } else if (currentLayout == MORSE) {
+    table = morseMORSE;
+    len = sizeof(morseMORSE) / sizeof(MorseLetter);
+  } else {
+    table = morseEN;
+    len = sizeof(morseEN) / sizeof(MorseLetter);
+  }
+
+  for (int i = 0; i < len; i++) {
+    if (s == table[i].code) return table[i].letter;
   }
   return "?";
 }
+
 
 void setup() {
   Keyboard.begin();
@@ -75,42 +70,38 @@ void loop() {
   if (isPressed) {
     NewTone(8, 2000);
     if (!lastState) pressStart = now;
+    pressStart = now;
     layoutSignaled = false;
+
   } else {
     noNewTone(8);
     if (lastState) {
       unsigned long pressDuration = now - pressStart;
 
-      if (!layoutSignaled && pressDuration >= 600) {
-        layoutMode++;
-        if(layoutMode > 2) layoutMode = 0;
-        
-        if(layoutMode == 0 || layoutMode == 1) {
-          Keyboard.press(KEY_LEFT_ALT);
-          Keyboard.press(KEY_LEFT_SHIFT);
-          Keyboard.releaseAll();
-        } else {
-          Keyboard.press(KEY_LEFT_GUI);
-          Keyboard.press(' ');
-          delay(100);
-          Keyboard.releaseAll();
-        }
-        
-        NewTone(8, 1000);
-        delay(50);
-        noNewTone(8);
-        layoutSignaled = true;
-      } else if (pressDuration >= 200) {
-        currentSymbol += "-";
-        lastMillis = now;
-      } else if (pressDuration >= 80) {
-        currentSymbol += ".";
-        lastMillis = now;
-      }
+if (!layoutSignaled && now - pressStart >= 600) {
+  if (currentLayout == EN) currentLayout = RU;
+  else if (currentLayout == RU) currentLayout = MORSE;
+  else currentLayout = EN;
+
+  if (currentLayout != MORSE) {
+    // note: надо чтобы предварительно на устройстве стояла en раскладка
+    Keyboard.press(KEY_LEFT_ALT);
+    Keyboard.press(KEY_LEFT_SHIFT);
+    Keyboard.releaseAll();
+  }
+
+  noNewTone(8);
+  NewTone(8, currentLayout == MORSE ? 1500 : 1000);
+  delay(80);
+  noNewTone(8);
+
+  layoutSignaled = true;
+}
+
     }
 
     if (currentSymbol.length() && now - lastMillis > 600) {
-      Keyboard.print(decodeMorse(currentSymbol, layoutMode));
+      Keyboard.print(decodeMorse(currentSymbol, isRussian));
       currentSymbol = "";
     }
   }
