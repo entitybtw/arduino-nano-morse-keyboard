@@ -34,7 +34,7 @@ MorseLetter morseRU[] = {
 
 MorseLetter morseMORSE[] = {
   {".", "/"},
-  {"-", "."}
+  {"-", "-"}
 };
 
 const char* decodeMorse(String s) {
