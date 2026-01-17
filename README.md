@@ -1,46 +1,46 @@
 # Arduino Nano Morse-keyboard
 
-### [английская версия readme](./README_EN.md)
+### [russian readme version](./README_RU.md)
 
-**Arduino Nano Morse-keyboard** — USB адаптер для телеграфного ключа
+**Arduino Nano Morse-keyboard** — USB adapter for a Morse telegraph key.
 
 <img src="images/morse.png" style="width:60%; height:auto"/>
 
-Этот адаптер является основой моего проекта, представленного на  
-VIII региональном конкурсе исследовательских и проектных работ школьников  
-**«Высший пилотаж — Пенза 2026»**.
+This adapter is the core of my project, presented at the  
+VIII Regional Competition of Research and Project Works for School Students  
+**“Vishiy Pilotazh — Penza 2026”**.
 
 <img src="images/me_1.jpg" style="width:80%; height:auto"/>
 
-Веб-версия тренажёра для работы с клавиатурой: **https://morse.entitybtw.ru**
+Web version of the keyboard training tool: **https://morse.entitybtw.ru**
 
 ---
 
-## Особенности
+## Features
 
-- Бюджетная сборка — собрать адаптер можно недорого  
-- Многофункциональные раскладки (смена при долгом зажатии кнопки):  
-  - Английская  
-  - Русская  
-  - Морзе  
-
----
-
-## Зависимости
-
-1. **unoHID** — эмуляция клавиатуры  
-2. **NewTone** — улучшенная библиотека для воспроизведения звука  
-
-Все библиотеки включены в папку `libs` в корневой директории репозитория.
+- Budget-friendly build — the adapter can be assembled at a low cost  
+- Multi-functional layouts (switching by long button hold):  
+  - English  
+  - Russian  
+  - Morse  
 
 ---
 
-## Схема подключения необходимых компонентов
+## Dependencies
+
+1. **unoHID** — keyboard emulation  
+2. **NewTone** — improved library for sound generation  
+
+All libraries are included in the `libs` folder in the root directory of the repository.
+
+---
+
+## Wiring diagram of required components
 
 <img src="images/arduino-nano-morse-keyboard-scheme.png" />
 
 ---
 
-## Связанные проекты
+## Related projects
 
-- [Morse Trainer](https://github.com/entitybtw/morse-trainer) — веб-тренажёр азбуки Морзе
+- [Morse Trainer](https://github.com/entitybtw/morse-trainer) — web-based Morse code trainer
