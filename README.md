@@ -2,13 +2,13 @@
 
 **Arduino Nano Morse-keyboard** — USB адаптер для телеграфного ключа
 
-<img src="images/morse.png" />
+<img src="images/morse.png"  max-width: 50%; height: auto;/>
 
 Этот адаптер является основой моего проекта, представленного на  
 VIII региональном конкурсе исследовательских и проектных работ школьников  
 **«Высший пилотаж — Пенза 2026»**.
 
-<img src="images/me_1.jpg" />
+<img src="images/me_1.jpg" max-width: 50%; height: auto; />
 
 Веб-версия тренажёра для работы с клавиатурой: **https://morse.entitybtw.ru**
 
