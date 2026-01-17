@@ -1,6 +1,6 @@
 # Arduino Nano Morse-keyboard
 
-### (английская версия readme)[/README_EN.md]
+### [английская версия readme](./README_EN.md)
 
 **Arduino Nano Morse-keyboard** — USB адаптер для телеграфного ключа
 
