@@ -1,4 +1,6 @@
 unsigned long lastMillis = 0;
+unsigned long lastPrintTime = 0;
+bool spaceAdded = false;
 #include <unoHID.h>
 #include <NewTone.h>
 unsigned long pressStart = 0;
@@ -21,15 +23,22 @@ MorseLetter morseEN[] = {
   {"-.-", "k"},  {".-..", "l"}, {"--", "m"},   {"-.", "n"},   {"---", "o"},
   {".--.", "p"}, {"--.-", "q"}, {".-.", "r"},  {"...", "s"},  {"-", "t"},
   {"..-", "u"},  {"...-", "v"}, {".--", "w"},  {"-..-", "x"}, {"-.--", "y"},
-  {"--..", "z"}
+  {"--..", "z"},
+  {"-----", "0"}, {".----", "1"}, {"..---", "2"}, {"...--", "3"},
+  {"....-", "4"}, {".....", "5"}, {"-....", "6"}, {"--...", "7"}, {"---..", "8"},
+  {"----.", "9"}
 };
 
+// алфавитный порядок частично сбит, [костыль))] из-за того что каким то образом 8ой элемент таблицы сходит с ума, возможно когда-то улучшу, но пока так
 MorseLetter morseRU[] = {
   {".-", "f"}, {"-...", ","}, {".--", "d"}, {"--.", "u"}, {"--..", "p"}, {"-..", "l"}, {".", "t"},  
   {"костыль))", "костыль))"}, {".---", "q"}, {"-.-", "r"}, {".-..", "k"}, {"...-", ";"}, {"..", "b"},
   {"--", "v"}, {"-.", "y"}, {"---", "j"}, {".--.", "g"}, {".-.", "h"}, {"...", "c"}, {"-", "n"}, {"..-", "e"}, {"..-.", "a"},  
   {"....", "["}, {"-.-.", "w"}, {"---.", "x"}, {"----", "i"}, {"--.-", "o"}, {".--.-.", "]"},  
-  {"-.--", "s"}, {"-..-", "m"}, {"...-...", "'"}, {"..--", "."}, {".-.-", "z"}
+  {"-.--", "s"}, {"-..-", "m"}, {"...-...", "'"}, {"..--", "."}, {".-.-", "z"},
+  {"-----", "0"}, {".----", "1"}, {"..---", "2"}, {"...--", "3"},
+  {"....-", "4"}, {".....", "5"}, {"-....", "6"}, {"--...", "7"}, {"---..", "8"},
+  {"----.", "9"}
 };
 
 MorseLetter morseMORSE[] = {
@@ -67,6 +76,11 @@ void loop() {
   bool isPressed = !digitalRead(3);
   unsigned long now = millis();
 
+  if (lastPrintTime > 0 && !spaceAdded && (now - lastPrintTime >= 5000)) {
+    Keyboard.print(" ");
+    spaceAdded = true;
+  }
+
   if (isPressed) {
     NewTone(8, 2000);
     if (!lastState) pressStart = now;
@@ -82,7 +96,7 @@ void loop() {
         else currentLayout = EN;
 
         if (currentLayout != MORSE) {
-        //  note: надо чтобы предварительно на устройстве стояла en раскладка
+          // note: надо чтобы предварительно на устройстве стояла en раскладка
           Keyboard.press(KEY_LEFT_ALT);
           Keyboard.press(KEY_LEFT_SHIFT);
           Keyboard.releaseAll();
@@ -107,6 +121,8 @@ void loop() {
 
     if (currentSymbol.length() && now - lastMillis > 600) {
       Keyboard.print(decodeMorse(currentSymbol));
+      lastPrintTime = now;
+      spaceAdded = false;
       currentSymbol = "";
     }
   }
