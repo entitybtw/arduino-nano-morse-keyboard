@@ -37,7 +37,7 @@ All libraries are included in the `libs` folder in the root directory of the rep
 
 ## Wiring diagram of required components
 
-<img src="images/arduino-nano-morse-keyboard-scheme.png" />
+<img src="images/arduino-nano-morse-keyboard-scheme_v2.png" />
 
 ---
 
