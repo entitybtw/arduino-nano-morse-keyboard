@@ -37,7 +37,7 @@ VIII региональном конкурсе исследовательски�
 
 ## Схема подключения необходимых компонентов
 
-<img src="images/arduino-nano-morse-keyboard-scheme.png" />
+<img src="images/arduino-nano-morse-keyboard-scheme_v2.png" />
 
 ---
 
